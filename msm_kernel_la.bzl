@@ -28,7 +28,6 @@ load(":msm_common.bzl", "define_top_level_config", "gen_config_without_source_li
 load(":msm_dtc.bzl", "define_dtc_dist")
 load(":msm_abl.bzl", "define_abl_dist")
 load(":avb_boot_img.bzl", "avb_sign_boot_image")
-load(":dpm_image.bzl", "define_dpm_image")
 load(":image_opts.bzl", "boot_image_opts")
 load(":target_variants.bzl", "la_variants")
 load(":modules.bzl", "COMMON_GKI_MODULES_LIST")
@@ -368,9 +367,6 @@ def _define_kernel_dist(
 
     msm_dist_targets.append("{}_avb_sign_boot_image".format(target))
 
-    if dpm_overlay:
-        msm_dist_targets.append(":{}_dpm_image".format(target))
-
     board_cmdline_extras = " ".join(boot_image_opts.board_kernel_cmdline_extras)
     if board_cmdline_extras:
         msm_dist_targets.append("{}_extra_cmdline".format(target))
@@ -475,9 +471,7 @@ def define_msm_la(
     build_config_fragments = get_build_config_fragments(msm_target)
     vendor_dlkm_module_unprotected_list = get_unprotected_vendor_modules_list(msm_target)
 
-    # Can't enable dpm_overlay if no overlays are listed
-    if len(dtbo_list) == 0 and dpm_overlay:
-        dpm_overlay = False
+    dpm_overlay = False
 
     vendor_unprotected_dlkm = " ".join(vendor_dlkm_module_unprotected_list)
     if vendor_unprotected_dlkm:
@@ -525,7 +519,7 @@ def define_msm_la(
         boot_image_opts = boot_image_opts,
         boot_image_outs = None if dtb_list else ["boot.img", "init_boot.img"],
         in_tree_module_list = in_tree_module_list,
-        dpm_overlay = dpm_overlay,
+        dpm_overlay = False,
     )
 
     _define_kernel_dist(
@@ -535,7 +529,7 @@ def define_msm_la(
         base_kernel,
         define_abi_targets,
         boot_image_opts = boot_image_opts,
-        dpm_overlay = dpm_overlay,
+        dpm_overlay = False,
     )
 
     _define_uapi_library(target)
