@@ -286,9 +286,6 @@ def _define_image_build(
         boot_partition_size = int(boot_image_opts.boot_partition_size),
     )
 
-    if dpm_overlay:
-        define_dpm_image(target)
-
     native.filegroup(
         name = "{}_system_dlkm_image_file".format(target),
         srcs = ["{}_images".format(base_kernel)],
